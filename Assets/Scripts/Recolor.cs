@@ -1,43 +1,40 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Recolor : MonoBehaviour
 {
-    public GameObject _currentSelectable;
-    private Color _currentColor;
-
-  
+    public GameObject _prevSelectable;
+    
     void Update()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out var hitInfo))
         {
-            var selectable = hitInfo.collider.gameObject;
-            _currentColor = selectable.GetComponent<Renderer>().material.color;
+            var currentSelectable = hitInfo.collider.gameObject;
             
-
-            if (selectable)
+            if (currentSelectable != null && !currentSelectable.GetComponent<Unselect>())
             {
-                if (_currentSelectable && _currentSelectable != selectable)
+                if (_prevSelectable && _prevSelectable != currentSelectable)
                 {
-                    Deselect(_currentSelectable,_currentColor);
+                    Deselect(_prevSelectable,Color.white);
                 }
-                _currentSelectable = selectable;
-                Select(_currentSelectable,Color.gray);
+                _prevSelectable = currentSelectable;
+                Select(currentSelectable, Color.gray);
             }
             else
             {
-                if (_currentSelectable)
+                if (_prevSelectable != null)
                 {
-                    Deselect(_currentSelectable,_currentColor);
+                    Deselect(_prevSelectable,Color.white);
                 }
             }
         }
         else
         {
-            if (_currentSelectable)
+            if (_prevSelectable != null)
             {
-                Deselect(_currentSelectable, _currentColor);
+                Deselect(_prevSelectable, Color.white);
             }
         }
     }
@@ -49,7 +46,7 @@ public class Recolor : MonoBehaviour
 
     void Deselect(GameObject gameObject, Color color)
     {
-        gameObject.GetComponent<Renderer>().material.color = _currentColor;
+        gameObject.GetComponent<Renderer>().material.color = color;
     }
     
 }
